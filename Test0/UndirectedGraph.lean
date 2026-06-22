@@ -35,6 +35,7 @@ def tinyGraph : UndirectedGraphEncoding 4 :=
   fun n => sillyFunction n
 
 
+
 /- Convert from the triangular matrix encoding to the 1D encoding -/
 /-
 def of_triangular_matrix (n : Nat) (g : UndirectedGraph n) : UndirectedGraphEncoding n :=
