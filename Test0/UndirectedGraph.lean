@@ -36,6 +36,15 @@ def tinyGraph : UndirectedGraphEncoding 4 :=
 
 
 
+
+
+/-
+def encode_graph (n : Nat) (g : UndirectedGraph n) : UndirectedGraphEncoding n :=
+match g with
+| UndirectedGraph n edges =>
+  UndirectedGraphEncoding n (encode_edges n g)
+  -/
+
 /- Convert from the triangular matrix encoding to the 1D encoding -/
 /-
 def of_triangular_matrix (n : Nat) (g : UndirectedGraph n) : UndirectedGraphEncoding n :=
