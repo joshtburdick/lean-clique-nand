@@ -9,9 +9,61 @@ import Mathlib.Combinatorics.SimpleGraph.Connectivity
 -/
 
 import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Fin.Basic
+-- import Mathlib.Tactic.Omega
+
+/- from Claude: indexing code -/
+
+-- Pascal's rule, specialized: (i+1).choose 2 = i.choose 2 + i
+theorem choose2_succ (i : Nat) : (i + 1).choose 2 = i.choose 2 + i := by
+  have h := Nat.choose_succ_succ i 1
+  simp [Nat.choose_one_right] at h
+  omega
+
+-- choose 2 is monotone
+theorem choose2_mono {a b : Nat} (hab : a ≤ b) : a.choose 2 ≤ b.choose 2 := by
+  induction b, hab using Nat.le_induction with
+  | base => exact le_refl _
+  | succ n hn ih =>
+    have := choose2_succ n
+    omega
+
+-- the enumeration itself
+def triIndex (n : Nat) (i : Fin n) (j : Fin i) : Fin (n.choose 2) :=
+  ⟨i.val.choose 2 + j.val, by
+    have h1 : j.val + 1 ≤ i.val := j.is_lt
+    have h2 : i.val + 1 ≤ n := i.is_lt
+    have step := choose2_succ i.val
+    have mono := choose2_mono h2
+    omega⟩
+
+-- injectivity, as a map out of the dependent pair type
+/- Claude gave this proof; I may not need it.
+theorem triIndex_injective (n : Nat) :
+    Function.Injective (fun p : Σ i : Fin n, Fin (i : Nat) => triIndex n p.1 p.2) := by
+  have key : ∀ {a b : Nat} (x y : Nat), x < a → a < b → a.choose 2 + x < b.choose 2 + y := by
+    intro a b x y hx hab
+    have step := choose2_succ a
+    have mono := choose2_mono hab
+    omega
+  rintro ⟨i1, j1⟩ ⟨i2, j2⟩ heq
+  simp only [triIndex, Fin.mk.injEq] at heq
+  have hi : i1.val = i2.val := by
+    rcases lt_trichotomy i1.val i2.val with h | h | h
+    · exact absurd heq (ne_of_lt (key j1.is_lt h))
+    · exact h
+    · exact absurd heq.symm (ne_of_lt (key j2.is_lt h))
+  have hi' : i1 = i2 := Fin.ext hi
+  subst hi'
+  have hj : j1.val = j2.val := by omega
+  exact Sigma.ext hi' (by simpa using Fin.ext hj)
+-/
+
 
 /-! Encoding of undirected graphs as bitmaps -/
+
+
 
 /- A triangular matrix encoding an undirected graph with n vertices. -/
 def UndirectedGraph (n : Nat) : Type :=
