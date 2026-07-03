@@ -13,6 +13,10 @@ import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Fin.Basic
 -- import Mathlib.Tactic.Omega
 
+
+
+
+
 /- from Claude: indexing code -/
 
 -- Pascal's rule, specialized: (i+1).choose 2 = i.choose 2 + i

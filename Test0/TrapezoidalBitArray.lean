@@ -6,12 +6,34 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josh Burdick
 -/
 
+
 /- Number of cells in a trapezoid, given the number of rows and columns -/
 def trapezoid_size_1 (n_rows : Nat) (n_cols : Nat) : Nat :=
   match n_rows, n_cols with
   | 0, _ => 0
   | n+1, m => trapezoid_size_1 n m + n + m
 #eval trapezoid_size_1 3 2
+
+
+/- A trapezoidal bit array. -/
+structure TrapezoidalBitArray (n_rows : Nat) (n_cols : Nat) : Type where
+  bits : (i : Fin n_rows) → Fin (i.val + n_cols) → Bool
+
+def ArrayType1 := TrapezoidalBitArray 3 2
+
+-- from Gemini, two ways to create one of these
+-- Option 1: Use `@` to make implicit arguments explicit
+#check @TrapezoidalBitArray.mk 4 3 (fun _ => fun _ => true)
+-- Option 2: Provide explicit types inside the function, letting Lean infer structure parameters
+#check (TrapezoidalBitArray.mk (fun (i : Fin 4) (_ : Fin (i.val + 3)) => true))
+
+-- example: creating a trapezoidal bit array containing "all ones"
+def fullTrapezoidalBitArray (n_rows : Nat) (n_cols : Nat) : TrapezoidalBitArray n_rows n_cols :=
+  @TrapezoidalBitArray.mk n_rows n_cols (fun _ => fun _ => true)
+
+
+
+
 
 /- Converts from 2-D trapezoid indices to a 1-D index. -/
 def index_1 (n_rows : Nat) (n_cols : Nat) (i : Nat) (j : Nat) : Nat :=
@@ -63,15 +85,3 @@ theorem trapezoid_size_eq (n_rows : Nat) (n_cols : Nat)
     induction n_rows using Nat.strongInduction_on with
     | h =>
   -/
-
-
-
-
-
-
-
-/- A trapezoidal bit array.
--/
-
-structure TrapezoidalBitArray (n_rows : Nat) (n_cols : Nat) : Type where
-  mk ::
