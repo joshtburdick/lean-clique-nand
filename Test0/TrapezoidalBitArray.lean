@@ -7,6 +7,11 @@ Authors: Josh Burdick
 -/
 
 
+/- A closed-form expression for the number of cells in a trapezoid -/
+def trapezoid_size (n_rows : Nat) (n_cols : Nat) : Nat :=
+  n_rows * (n_cols + (n_cols + n_rows - 1)) / 2
+#eval trapezoid_size 3 2
+
 /- Number of cells in a trapezoid, given the number of rows and columns -/
 def trapezoid_size_1 (n_rows : Nat) (n_cols : Nat) : Nat :=
   match n_rows, n_cols with
@@ -15,21 +20,24 @@ def trapezoid_size_1 (n_rows : Nat) (n_cols : Nat) : Nat :=
 #eval trapezoid_size_1 3 2
 
 
-/- A trapezoidal bit array. -/
-structure TrapezoidalBitArray (n_rows : Nat) (n_cols : Nat) : Type where
+/- A trapezoidal bit array -/
+structure TrapezoidalBitArray : Type where
+  n_rows : Nat
+  n_cols : Nat
   bits : (i : Fin n_rows) → Fin (i.val + n_cols) → Bool
 
-def ArrayType1 := TrapezoidalBitArray 3 2
+/- An example of that, in which every entry is 1 (true). -/
+def fullTrapezoidalBitArray (n_rows : Nat) (n_cols : Nat) : TrapezoidalBitArray :=
+TrapezoidalBitArray.mk n_rows n_cols (fun _ => fun _ => true)
 
--- from Gemini, two ways to create one of these
--- Option 1: Use `@` to make implicit arguments explicit
-#check @TrapezoidalBitArray.mk 4 3 (fun _ => fun _ => true)
--- Option 2: Provide explicit types inside the function, letting Lean infer structure parameters
-#check (TrapezoidalBitArray.mk (fun (i : Fin 4) (_ : Fin (i.val + 3)) => true))
+def tba1 := fullTrapezoidalBitArray 4 3
+#eval tba1.n_cols
+#eval tba1.n_rows
+#eval tba1.bits (0 : Fin 4) (0 : Fin 3)
 
--- example: creating a trapezoidal bit array containing "all ones"
-def fullTrapezoidalBitArray (n_rows : Nat) (n_cols : Nat) : TrapezoidalBitArray n_rows n_cols :=
-  @TrapezoidalBitArray.mk n_rows n_cols (fun _ => fun _ => true)
+
+
+/- Flattens a trapezoidal bit array. FIXME -/
 
 
 
@@ -40,11 +48,6 @@ def index_1 (n_rows : Nat) (n_cols : Nat) (i : Nat) (j : Nat) : Nat :=
   match i with
   | 0 => j
   | i'+1 => index_1 n_rows n_cols (i') (j.succ) + n_cols + i'
-
-/- A closed-form expression for the number of cells in a trapezoid -/
-def trapezoid_size (n_rows : Nat) (n_cols : Nat) : Nat :=
-  n_rows * (n_cols + (n_cols + n_rows - 1)) / 2
-#eval trapezoid_size 3 2
 
 def index (n_rows : Nat) (n_cols : Nat) (i : Fin n_rows) (j : Fin (i.val + n_cols)) : Nat :=
   trapezoid_size (i.val) (n_cols) + j.val
@@ -69,6 +72,7 @@ theorem index_bounds (n_rows : Nat) (n_cols : Nat) (i : Fin n_rows) (j : Fin (i.
 
 -/
 
+-- practice with omega
 theorem math_1 (a b : Nat) : ( a + b <= (2 * a + 3 * b)) :=
 by omega
 
