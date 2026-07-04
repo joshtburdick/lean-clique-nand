@@ -38,8 +38,9 @@ def tba1 := fullTrapezoidalBitArray 4 3
 
 
 /- Flattens a trapezoidal bit array. FIXME -/
-
-
+/-
+def flatten (a : TrapezoidalBitArray) : (Fin (trapezoid_size a.n_rows a.n_cols) → Bool) :=
+-/
 
 
 
