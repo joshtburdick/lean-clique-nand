@@ -13,6 +13,10 @@ import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Fin.Basic
 -- import Mathlib.Tactic.Omega
 
+import Test0.TrapezoidalBitArray
+
+abbrev UndirectedGraphEncoding (n : Nat) :=
+  TrapezoidalBitArray n 0
 
 
 
@@ -77,7 +81,7 @@ def UndirectedGraph (n : Nat) : Type :=
 def num_edges (n : Nat) : Nat :=
   n * (n - 1) / 2
 
-def UndirectedGraphEncoding (n : Nat) : Type :=
+def UndirectedGraphEncoding1 (n : Nat) : Type :=
   Fin (num_edges n) → Bool
 
 
@@ -87,9 +91,8 @@ match n with
 | 0 => true
 | _ => false
 
-def tinyGraph : UndirectedGraphEncoding 4 :=
+def tinyGraph : UndirectedGraphEncoding1 4 :=
   fun n => sillyFunction n
-
 
 
 

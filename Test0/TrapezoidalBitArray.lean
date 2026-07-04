@@ -6,7 +6,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josh Burdick
 -/
 
-def x1 := BitVec.fill 3 true
+def x1 := BitVec.fill 2 true
 def x2 := BitVec.fill 2 false
 #eval x1
 #eval x2
