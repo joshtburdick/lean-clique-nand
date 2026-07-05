@@ -1,7 +1,7 @@
 
 import Mathlib.Data.PNat.Defs
 
-import Test0.TrapezoidalBitArray
+import CliqueNandBound.TrapezoidalBitArray
 
 /- Copyright (c) 2026 Josh Burdick. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
@@ -11,8 +11,8 @@ Authors: Josh Burdick
 /- An unbounded fan-in NAND gate circuit.
 
 We represent the inputs to each gate as a bitmask.
-The circuit is defined as a function from gate index,
-to such a bitmask.
+A trapezoidal bit array represents the inputs and/or previous
+gates which are fed into each gate.
 -/
 def NandCircuit (num_inputs : Nat) (num_gates : PNat) : Type :=
   TrapezoidalBitArray num_gates num_inputs

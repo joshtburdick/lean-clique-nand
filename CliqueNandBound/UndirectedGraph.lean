@@ -13,7 +13,7 @@ import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Data.Fin.Basic
 -- import Mathlib.Tactic.Omega
 
-import Test0.TrapezoidalBitArray
+import CliqueNandBound.TrapezoidalBitArray
 
 abbrev UndirectedGraphEncoding (n : Nat) :=
   TrapezoidalBitArray n 0
@@ -25,7 +25,7 @@ structure SortedDistinctVector (n : Nat) (k : Nat) where
   distinct : forall (a b : Fin k), a < b -> elements.get a < elements.get b
 
 /- The property of having a k-vertex clique. -/
-def hasClique (n : Nat) (k : Fin n) (G : UndirectedGraphEncoding n) : Prop :=
+def hasClique (n : Nat) (k : Fin n.succ) (G : UndirectedGraphEncoding n) : Prop :=
   let get_edge (u : Fin n) (v : Fin n) (h : v < u) : Bool :=
     TrapezoidalBitArray.get G u ⟨v.val, by omega⟩
   ∃ (sdv : SortedDistinctVector n k), (k.val ≥ 1) ∧

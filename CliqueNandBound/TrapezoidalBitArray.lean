@@ -23,7 +23,14 @@ theorem trapezoid_size_mono (m : Nat) (i n : Nat) (h : i ≤ n) :
 #eval trapezoid_size 0 4
 
 
-/- Implementation of a trapezoidal bit array as a flat BitVec. -/
+/- Implementation of a trapezoidal bit array as a flat BitVec.
+  n_rows : number of rows
+  n_cols : number of columns (in the 0-th, a.k.a first, row;
+    successive rows add one more column)
+  bitvec : flat bit vector of size trapezoid_size n_rows n_cols
+
+??? FIXME call this "TrapezoidalBitVec", as its size is "baked in"?
+-/
 structure TrapezoidalBitArray (n_rows : Nat) (n_cols : Nat) where
   bitvec : BitVec (trapezoid_size n_rows n_cols)
 
