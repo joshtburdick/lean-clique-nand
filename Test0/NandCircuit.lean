@@ -1,6 +1,8 @@
 
 import Mathlib.Data.PNat.Defs
 
+import Test0.TrapezoidalBitArray
+
 /- Copyright (c) 2026 Josh Burdick. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josh Burdick
@@ -13,7 +15,7 @@ The circuit is defined as a function from gate index,
 to such a bitmask.
 -/
 def NandCircuit (num_inputs : Nat) (num_gates : PNat) : Type :=
-  (g : Fin num_gates) → BitVec (num_inputs + g.val)
+  TrapezoidalBitArray num_gates num_inputs
 
 /- Evaluates a single gate.
 
@@ -31,7 +33,9 @@ BitVec (num_inputs + (gate.val + 1)) :=
     match gate with
     | ⟨0, _⟩ => inputs
     | ⟨g+1, h⟩ => eval_gate num_inputs num_gates circuit inputs ⟨g, Nat.lt_of_succ_lt h⟩
-  let output_bit : Bool := (previous_inputs &&& (circuit gate)) != (circuit gate)
+  let wires : BitVec (num_inputs + gate.val) :=
+    Nat.add_comm gate.val num_inputs ▸ TrapezoidalBitArray.get_row circuit gate
+  let output_bit : Bool := (previous_inputs &&& wires) != wires
   BitVec.cons output_bit previous_inputs
 
 /- Evaluates the entire circuit.  -/
@@ -41,13 +45,3 @@ def eval_circuit (num_inputs : Nat) (num_gates : PNat)
   have : 0 < num_gates.val := num_gates.property
   let last_gate_index : Fin num_gates := ⟨num_gates.val - 1, by omega⟩
   BitVec.msb <| eval_gate num_inputs num_gates circuit inputs last_gate_index
-
-
-
-/-
-def f (x : Fin 3) : Nat :=
-match x with
-| (0 : Fin 3) => 0
-| (1 : Fin 3) => 1
-| (2 : Fin 3) => 2
--/
