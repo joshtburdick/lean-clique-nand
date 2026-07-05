@@ -22,6 +22,15 @@ def TrapezoidalBitArray (n_rows : Nat) (n_cols : Nat) : Type :=
 def trapezoid_size : Nat → Nat → Nat
   | 0, _ => 0
   | n + 1, m => trapezoid_size n m + (n + m)
+
+theorem trapezoid_size_mono (m : Nat) (i n : Nat) (h : i ≤ n) :
+    trapezoid_size i m ≤ trapezoid_size n m := by
+  induction h with
+  | refl => rfl
+  | step h_le ih =>
+    simp only [trapezoid_size]
+    omega
+
 #eval trapezoid_size 3 2
 #eval trapezoid_size 0 4
 
@@ -45,3 +54,31 @@ fun i => match i with
 | 1 => BitVec.fill 3 false
 | 2 => BitVec.fill 4 false
 #eval flatten 3 2 testTrapezoid
+
+
+
+/- Alternative, experimental implementation of this
+  as a single BitVec. -/
+structure TrapezoidalBitArray1 (n_rows : Nat) (n_cols : Nat) where
+  bitvec : BitVec (trapezoid_size n_rows n_cols)
+
+
+/- Extracts a substring of a BitVec. -/
+
+def BitVec.substr {w : Nat}
+    (start_index : Nat) (width : Nat) (_ : start_index + width ≤ w) (x : BitVec w) :
+    BitVec width :=
+  BitVec.ushiftRight x start_index |> BitVec.truncate width
+
+
+/- Extracts a row from the single-BitVec representation. -/
+def TrapezoidalBitArray1.get_row {n_rows n_cols : Nat}
+    (t : TrapezoidalBitArray1 n_rows n_cols) (i : Fin n_rows) : BitVec (i.val + n_cols) :=
+  let row_width : Nat := i.val + n_cols
+  let row_start : Nat := trapezoid_size i.val n_cols
+  have h_le : row_start + row_width ≤ trapezoid_size n_rows n_cols := by
+    have h1 : row_start + row_width = trapezoid_size (i.val + 1) n_cols := by rfl
+    rw [h1]
+    have h2 : i.val + 1 ≤ n_rows := i.isLt
+    exact trapezoid_size_mono n_cols (i.val + 1) n_rows h2
+  BitVec.substr row_start row_width h_le t.bitvec
