@@ -1,4 +1,3 @@
-
 import CliqueNandBound.UndirectedGraph
 import CliqueNandBound.NandCircuit
 
@@ -6,7 +5,6 @@ import CliqueNandBound.NandCircuit
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josh Burdick
 -/
-
 
 
 /- Property that a NAND circuit correctly detects all k-vertex cliques. -/
@@ -20,6 +18,8 @@ def existsCliqueDetectorCircuit (n : Nat) (k : Fin (n.succ)) (num_gates : ℕ+) 
   ∃ (circuit : NandCircuit (trapezoid_size n 0) num_gates),
   cliqueDetectorCircuit n k num_gates circuit
 
+/- A pretty minimal example. -/
+theorem exists_circuit_3_3_2 : existsCliqueDetectorCircuit 3 3 2 := sorry
 
 
 /- The minimum number of gates required to detect all k-vertex cliques in n-vertex graphs. -/
