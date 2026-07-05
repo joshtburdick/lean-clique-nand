@@ -1,13 +1,10 @@
-# test0
+# Formalizing clique-detection circuits using NAND gates
 
-## GitHub configuration
+This is a repo for stating bounds on the number of NAND gates needed
+to detect cliques, in [Lean](https://lean-lang.org/).
 
-To set up your new GitHub repository, follow these steps:
+It is very much experimental, as I'm not fluent in Lean.
 
-* Under your repository name, click **Settings**.
-* In the **Actions** section of the sidebar, click "General".
-* Check the box **Allow GitHub Actions to create and approve pull requests**.
-* Click the **Pages** section of the settings sidebar.
-* In the **Source** dropdown menu, select "GitHub Actions".
-
-After following the steps above, you can remove this section from the README file.
+It also doesn't include any actual `bounds`. However, one hope is that
+either Lean's SAT-solver-based tactics, or AI-based proof assistants,
+could find bounds for _tiny_ problem sizes.
