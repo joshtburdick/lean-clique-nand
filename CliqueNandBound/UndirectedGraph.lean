@@ -24,7 +24,7 @@ structure SortedDistinctVector (n : Nat) (k : Nat) where
   elements : Vector (Fin n) k
   distinct : forall (a b : Fin k), a < b -> elements.get a < elements.get b
 
-
+/- The property of having a k-vertex clique. -/
 def hasClique (n : Nat) (k : Fin n) (G : UndirectedGraphEncoding n) : Prop :=
   let get_edge (u : Fin n) (v : Fin n) (h : v < u) : Bool :=
     TrapezoidalBitArray.get G u ⟨v.val, by omega⟩
