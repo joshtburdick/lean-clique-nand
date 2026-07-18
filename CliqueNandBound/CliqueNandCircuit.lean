@@ -19,8 +19,9 @@ def existsCliqueDetectorCircuit (n : Nat) (k : Fin (n.succ)) (num_gates : ℕ+) 
   cliqueDetectorCircuit n k num_gates circuit
 
 /- A pretty minimal example. -/
+/-
 theorem exists_circuit_3_3_2 : existsCliqueDetectorCircuit 3 3 2 := sorry
-
+-/
 
 /- The minimum number of gates required to detect all k-vertex cliques in n-vertex graphs. -/
 /- FIXME not working
