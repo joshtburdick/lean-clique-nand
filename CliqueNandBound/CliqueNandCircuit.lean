@@ -11,7 +11,7 @@ Authors: Josh Burdick
 def cliqueDetectorCircuit (n : Nat) (k : Fin (n.succ)) (num_gates : ℕ+)
 (circuit : NandCircuit (trapezoid_size n 0) num_gates) : Prop :=
   ∀ (G : UndirectedGraphEncoding n), hasClique n k G
-  ↔ eval_circuit (trapezoid_size n 0) num_gates circuit G.bitvec
+  ↔ eval_circuit (trapezoid_size n 0) num_gates circuit G.fn
 
 /- There exists a clique-detecting circuit of a given size. -/
 def existsCliqueDetectorCircuit (n : Nat) (k : Fin (n.succ)) (num_gates : ℕ+) : Prop :=
