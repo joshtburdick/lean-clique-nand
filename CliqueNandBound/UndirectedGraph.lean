@@ -6,21 +6,26 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josh Burdick
 -/
 
-abbrev UndirectedGraphEncoding (n : Nat) :=
+/-- Number of unordered pairs of distinct vertices in an `n`-vertex graph. -/
+abbrev numGraphEdges (n : ℕ) : ℕ :=
+  trapezoidSize n 0
+
+/-- Encoding of an `n`-vertex simple undirected graph as a lower-triangular bit array. -/
+abbrev UndirectedGraphEncoding (n : ℕ) :=
   TrapezoidalBitArray n 0
 
-/- A vector of length n, with values in 0 .. k-1, whose elements are strictly increasing. -/
-structure SortedDistinctVector (n : Nat) (k : Nat) where
+/-- A vector of length `k`, with values in `0 .. n-1`, whose elements are strictly increasing. -/
+structure SortedDistinctVector (n k : ℕ) where
   elements : Vector (Fin n) k
-  distinct : forall (a b : Fin k), a < b -> elements.get a < elements.get b
+  distinct : ∀ (a b : Fin k), a < b → elements.get a < elements.get b
 
-/- The property of having a k-vertex clique. -/
-def hasClique (n : Nat) (k : Fin n.succ) (G : UndirectedGraphEncoding n) : Prop :=
-  let get_edge (u : Fin n) (v : Fin n) (h : v < u) : Bool :=
+/-- The property of having a `k`-vertex clique. -/
+def hasClique (n : ℕ) (k : Fin (n + 1)) (G : UndirectedGraphEncoding n) : Prop :=
+  let getEdge (u v : Fin n) (h : v < u) : Bool :=
     TrapezoidalBitArray.get G u ⟨v.val, by omega⟩
-  ∃ (sdv : SortedDistinctVector n k), (k.val ≥ 1) ∧
-    (∀ (i : Fin k) (j : Fin k), (h : i.val < j.val) →
+  ∃ (sdv : SortedDistinctVector n k), k.val ≥ 1 ∧
+    ∀ (i j : Fin k) (h : i.val < j.val),
       let u := sdv.elements.get j
       let v := sdv.elements.get i
-      have h_lt : v < u := sdv.distinct i j h
-      get_edge u v h_lt)
+      have hLt : v < u := sdv.distinct i j h
+      getEdge u v hLt

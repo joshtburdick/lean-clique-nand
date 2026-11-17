@@ -6,71 +6,64 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josh Burdick
 -/
 
-/- A recursive definition of the number of cells in a trapezoid -/
-def trapezoid_size : Nat → Nat → Nat
+/-- A recursive definition of the number of cells in a trapezoid. -/
+def trapezoidSize : ℕ → ℕ → ℕ
   | 0, _ => 0
-  | n + 1, m => trapezoid_size n m + (n + m)
+  | n + 1, m => trapezoidSize n m + (n + m)
 
-theorem trapezoid_size_mono (m : Nat) (i n : Nat) (h : i ≤ n) :
-    trapezoid_size i m ≤ trapezoid_size n m := by
+theorem trapezoidSize_mono (m i n : ℕ) (h : i ≤ n) :
+    trapezoidSize i m ≤ trapezoidSize n m := by
   induction h with
   | refl => rfl
-  | step h_le ih =>
-    simp only [trapezoid_size]
+  | step _ ih =>
+    simp only [trapezoidSize]
     omega
 
-#eval trapezoid_size 3 2
-#eval trapezoid_size 0 4
+/-- Implementation of a trapezoidal bit array as a function
+  `Fin (trapezoidSize nRows nCols) → Bool`.
+  - `nRows`: number of rows
+  - `nCols`: number of columns in the 0-th (first) row;
+    successive rows add one more column
+  - `fn`: function mapping flat index to `Bool` -/
+structure TrapezoidalBitArray (nRows nCols : ℕ) where
+  fn : Fin (trapezoidSize nRows nCols) → Bool
 
-
-/- Implementation of a trapezoidal bit array as a function
-  `Fin (trapezoid_size n_rows n_cols) → Bool`.
-  n_rows : number of rows
-  n_cols : number of columns (in the 0-th, a.k.a first, row;
-    successive rows add one more column)
-  fn : function mapping flat index to Bool
--/
-structure TrapezoidalBitArray (n_rows : Nat) (n_cols : Nat) where
-  fn : Fin (trapezoid_size n_rows n_cols) → Bool
-
-
-/- Extracts one bit from the trapezoidal representation. -/
-def TrapezoidalBitArray.get {n_rows n_cols : Nat}
-    (t : TrapezoidalBitArray n_rows n_cols) (i : Fin n_rows)
-    (j : Fin (i.val + n_cols)) : Bool :=
-  let row_start : Nat := trapezoid_size i.val n_cols
-  let bit_index : Nat := row_start + j.val
-  have h_lt : bit_index < trapezoid_size n_rows n_cols := by
-    have h1 : row_start + (i.val + n_cols) = trapezoid_size (i.val + 1) n_cols := rfl
-    have h4 : i.val + 1 ≤ n_rows := i.isLt
-    have h5 : trapezoid_size (i.val + 1) n_cols ≤ trapezoid_size n_rows n_cols :=
-      trapezoid_size_mono n_cols (i.val + 1) n_rows h4
-    dsimp [bit_index, row_start]
+/-- Extracts one bit from the trapezoidal representation. -/
+def TrapezoidalBitArray.get {nRows nCols : ℕ}
+    (t : TrapezoidalBitArray nRows nCols) (i : Fin nRows)
+    (j : Fin (i.val + nCols)) : Bool :=
+  let rowStart : ℕ := trapezoidSize i.val nCols
+  let bitIndex : ℕ := rowStart + j.val
+  have hLt : bitIndex < trapezoidSize nRows nCols := by
+    have h1 : rowStart + (i.val + nCols) = trapezoidSize (i.val + 1) nCols := rfl
+    have h4 : i.val + 1 ≤ nRows := i.isLt
+    have h5 : trapezoidSize (i.val + 1) nCols ≤ trapezoidSize nRows nCols :=
+      trapezoidSize_mono nCols (i.val + 1) nRows h4
+    dsimp [bitIndex, rowStart]
     omega
-  t.fn ⟨bit_index, h_lt⟩
+  t.fn ⟨bitIndex, hLt⟩
 
-
-/- Extracts a row from the trapezoidal representation as a function
-  `Fin (i.val + n_cols) → Bool`. -/
-def TrapezoidalBitArray.get_row {n_rows n_cols : Nat}
-    (t : TrapezoidalBitArray n_rows n_cols) (i : Fin n_rows) :
-    Fin (i.val + n_cols) → Bool :=
+/-- Extracts a row from the trapezoidal representation as a function
+  `Fin (i.val + nCols) → Bool`. -/
+def TrapezoidalBitArray.getRow {nRows nCols : ℕ}
+    (t : TrapezoidalBitArray nRows nCols) (i : Fin nRows) :
+    Fin (i.val + nCols) → Bool :=
   fun j => t.get i j
 
-
--- Helper to convert a function Fin n → Bool to a List Bool for easy testing/eval display
-def rowToList {n : Nat} (f : Fin n → Bool) : List Bool :=
+/-- Helper to convert a function `Fin n → Bool` to a `List Bool`. -/
+def rowToList {n : ℕ} (f : Fin n → Bool) : List Bool :=
   (List.finRange n).map f
 
--- A small sample trapezoidal bit array:
--- rows 0 and 2 are all 0s, but row 1 is all 1s
+/-- A small sample trapezoidal bit array:
+  rows 0 and 2 are all `false`, while row 1 is all `true`. -/
 def testTrapezoid1 : TrapezoidalBitArray 3 2 :=
   { fn := fun idx => idx.val ∈ [2, 3, 4] }
 
--- some tests of this
-#eval rowToList (testTrapezoid1.get_row 0)
-#eval rowToList (testTrapezoid1.get_row 1)
-#eval rowToList (testTrapezoid1.get_row 2)
-#eval testTrapezoid1.get 0 1
-#eval testTrapezoid1.get 1 1
-#eval testTrapezoid1.get 2 1
+example : trapezoidSize 3 2 = 9 := rfl
+example : trapezoidSize 0 4 = 0 := rfl
+example : rowToList (testTrapezoid1.getRow 0) = [false, false] := by decide
+example : rowToList (testTrapezoid1.getRow 1) = [true, true, true] := by decide
+example : rowToList (testTrapezoid1.getRow 2) = [false, false, false, false] := by decide
+example : testTrapezoid1.get 0 1 = false := by decide
+example : testTrapezoid1.get 1 1 = true := by decide
+example : testTrapezoid1.get 2 1 = false := by decide
